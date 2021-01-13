@@ -41,7 +41,7 @@ artwork <- tuesdata$artwork
 artists<- tuesdata$artists
 
 # Register Google Cloud Maps API with API key 
-register_google(key = 'AIzaSyCY4B6Qw0zPCr2DuRQwUG_WCwlQ_hijweM')
+register_google(key = 'YOUR_API_KEY')
 
 # Omit NA from Birth Place column
 artists<-artists[!is.na(artists$placeOfBirth), ]

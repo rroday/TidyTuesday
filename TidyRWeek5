@@ -1,0 +1,88 @@
+## ---------------------------
+##
+## Script name: TidyTuesday 2021-01-26 (Week 5)
+##
+## Author: Rachel Roday
+##
+## Date Created: 2021-01-26
+##
+## Copyright (c) Rachel Roday, 2021
+## Email: rroday@udel.edu
+##
+## ---------------------------
+##
+## Notes: Plastics
+##        Time to code: 3 hours
+## ---------------------------
+
+# Set wd
+setwd("C:/Users/RER/Desktop/TidyTuesday")
+
+# Libraries
+
+library(tidytuesdayR)
+library(ggplot2)
+library(ggmap)
+library(maptools)
+library(maps)
+library(tidyverse)
+library(viridis)
+library(dplyr)
+
+# Get the Data
+
+# Read in with tidytuesdayR package 
+# Install from CRAN via: install.packages("tidytuesdayR")
+# This loads the readme and all the datasets for the week of interest
+
+tuesdata <- tidytuesdayR::tt_load('2021-01-26')
+plastics <- tuesdata$plastics
+
+
+# Melt data into long format by plastics
+pmelt<-plastics %>%
+  pivot_longer(c("hdpe", "ldpe","o", "pet","pp","ps","pvc"),
+               names_to = "Plastic.Type", 
+               values_to = "Plastic.Count")
+
+# Filter by Coca Cola, 2020, PET plastic found
+pmelt2<-pmelt %>%
+  filter(parent_company == "The Coca-Cola Company", 
+         year == "2020", Plastic.Count > "0", 
+         Plastic.Type== 'pet') %>%
+  rename(region = country)
+
+
+# Bar Graph
+ggplot(pmelt2, aes(x=region, y=Plastic.Count))+
+  geom_bar(stat='identity')+
+  ggtitle("The Coca-Cola Company 2020 Global PET Plastic Pollution")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Get world map 
+world_map <- map_data("world")
+
+# Join lat/lon to plastics df
+pmelt3<- left_join(pmelt2, world_map, by = 'region')
+
+# map - please dont ask me what happened to the other countries
+ggplot(pmelt3, aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Plastic.Count ), color = "white")+
+  scale_fill_viridis_c(option = "C", name= "Plastic Count")+
+  theme_minimal()+
+  theme(panel.background = element_rect(fill = "lightblue",
+                                    colour = "lightblue",
+                                    size = 0.5, linetype = "solid"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = "lightblue"),
+    axis.title.x=element_blank(),
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.title.y=element_blank(),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    legend.position="bottom")+
+  labs(title="Global Coca Cola PET Pollution (2020)")
+  

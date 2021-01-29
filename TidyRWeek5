@@ -22,12 +22,14 @@ setwd("C:/Users/RER/Desktop/TidyTuesday")
 
 library(tidytuesdayR)
 library(ggplot2)
-library(ggmap)
-library(maptools)
-library(maps)
+# library(ggmap)
+# library(maptools)
+# library(maps)
 library(tidyverse)
 library(viridis)
 library(dplyr)
+library(sf)
+library(rnaturalearth)
 
 # Get the Data
 
@@ -52,24 +54,17 @@ pmelt2<-pmelt %>%
          Plastic.Type== 'pet') %>%
   rename(region = country)
 
-
-# Bar Graph
-ggplot(pmelt2, aes(x=region, y=Plastic.Count))+
-  geom_bar(stat='identity')+
-  ggtitle("The Coca-Cola Company 2020 Global PET Plastic Pollution")+
-  theme_bw()+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
 # Get world map 
-world_map <- map_data("world")
+world <- ne_countries(scale = "medium", returnclass = "sf") %>%
+  select(admin)
 
 # Join lat/lon to plastics df
-pmelt3<- left_join(pmelt2, world_map, by = 'region')
+pmelt3 <- left_join(world, pmelt2, by = c("admin" = "region"))
 
 # map - please dont ask me what happened to the other countries
-ggplot(pmelt3, aes(x = long, y = lat, group = group)) +
-  geom_polygon(aes(fill = Plastic.Count ), color = "white")+
-  scale_fill_viridis_c(option = "C", name= "Plastic Count")+
+ggplot(pmelt3) +
+  geom_sf(data = pmelt3, aes(fill = Plastic.Count), color = "white")+
+  scale_fill_viridis_c(option = "C", name= "Plastic Count", na.value = "white")+
   theme_minimal()+
   theme(panel.background = element_rect(fill = "lightblue",
                                     colour = "lightblue",

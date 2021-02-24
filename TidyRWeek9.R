@@ -38,9 +38,8 @@ library(ggrepel)
 tuesdata <- tidytuesdayR::tt_load('2021-02-23')
 
 earn <- tuesdata$earn
-employed <- tuesdata$employed
 
-
+#Personal theme for this graph
 ggrachel <-   theme(text = element_text(),
                     panel.background = element_rect(fill = "white",
                                                     colour = "white"),
@@ -58,18 +57,16 @@ ggrachel <-   theme(text = element_text(),
                     aspect.ratio=1/2,
                     plot.margin = margin(2,.8,2,.8, "cm"))
 
+#Filter and summarise 
 earn2<-
   earn %>%
   filter(age == "25 to 54 years", year == c(2010, 2020)) %>%
   filter(race != "All Races", sex != "Both Sexes") %>%
-  #average 4 2020 quarters for women races
-  # bar plot coparing age/race/gender
   group_by(year,sex,race,age) %>%
   summarise(means = mean(median_weekly_earn)) %>%
   mutate(`race.sex` = paste(as.character(race), as.character(sex)))
 
-head(earn2)
-
+#Graph
 ggplot(data=earn2, aes(y=means, x=year, shape= sex, colour= race))+
   geom_point(size = 3, alpha=.5)+
   geom_line(size = 2, alpha = .5)+
@@ -92,6 +89,7 @@ ggplot(data=earn2, aes(y=means, x=year, shape= sex, colour= race))+
                   fontface = "bold", 
                   size = 3, 
                   nudge_x = .5) +
+#is there a better way to do the following?
   annotate("text", label = "Asian Men", x = 2018, y = 1450, size = 3, colour = "#50A3A4",angle = 17)+
   annotate("text", label = "Asian Women", x = 2018, y = 1150, size = 3, colour = "#50A3A4",angle = 11)+
   annotate("text", label = "White Men", x = 2015, y = 1050, size = 3, colour = "#FCAF38",angle = 5.8)+

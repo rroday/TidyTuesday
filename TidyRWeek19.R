@@ -11,7 +11,7 @@
 ##
 ## ---------------------------
 ##
-## Notes: Time to code- 32 min
+## Notes: Time to code- 35 min
 ##        
 ##
 ## ---------------------------
@@ -26,14 +26,11 @@ library(ggplot2)
 library(tidyverse)
 library(viridis)
 library(dplyr)
-library(lubridate)
-library(readr)
-library(data.table)
-library(ggtext)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(ggspatial)
 library(sf)
+
 ## Get data
 
 water <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-05-04/water.csv')
